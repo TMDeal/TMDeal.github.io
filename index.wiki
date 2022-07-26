@@ -1,0 +1,5 @@
+= HackTheBox Writeups =
+
+* [X] [[boxes/devzat|Devzat]]
+    * [X] User Flag
+    * [X] Root Flag
