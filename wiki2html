@@ -50,3 +50,4 @@ pandoc -f vimwiki -t html $INPUT \
     --output "$OUTPUT" \
     --data-dir "$DATA_PATH" \
     --defaults "$METADATA" \
+    --lua-filter="$FILTERS_PATH"/fix_images.lua
