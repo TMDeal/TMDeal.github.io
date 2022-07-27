@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# vimwiki expects these arguments in specific places, so we will make sure they
+# are where vimwiki expects them to be
 FORCE="$1"
 SYNTAX="$2"
 EXTENSION="$3"
@@ -8,6 +10,7 @@ INPUT="$5"
 TEMPLATE_PATH="$7"
 TEMPLATE_DEFAULT="$8"
 
+# vimwiki sets an unset argument as a "-" instead of "". Was a little annoying
 if [ "${11}" == "-" ]; then
     WEBROOT="http://127.0.0.1:8080"
 else
@@ -27,10 +30,12 @@ OUTPUT="$OUTPUTDIR"/$(basename "$INPUT" .$EXTENSION).html
 TITLE=$(basename "$INPUT" .$EXTENSION)
 DATE=$(date +"%Y-%m-%d")
 
+# path to generated metadata files. 
 METADATA_PATH="$SCRIPT_DIR"/metadata
 METADATA_INPUT_RELATIVE=$(realpath --relative-to "$SCRIPT_DIR" "$INPUT" | cut -f 1 -d ".").yml
 METADATA="$METADATA_PATH/$METADATA_INPUT_RELATIVE"
 
+# Path to local pandoc data files
 DATA_PATH="$SCRIPT_DIR"/data
 FILTERS_PATH="$DATA_PATH"/filters
 
@@ -44,12 +49,17 @@ metadata:
 EOF
 )
 
+# Always create a metadata file if an associated file does not already have
+# one. This will be set to the defaults defined in $DEFAULTS
 if [ ! -f "$METADATA" ]; then
     mkdir -p "$METADATA_PATH/$(dirname $METADATA_INPUT_RELATIVE)"
     printf "$DEFAULTS" > "$METADATA"
 fi
 
+# Always update the web root since it may change between development and production
 sed -i -E "s,(.*webroot:).*,\1 $WEBROOT,g" "$METADATA"
+# Set last updated to be equal to the date this file was last rebuilt
+# TODO: a rebuild may not always mean the file gets updated, rethink this
 sed -i -E "s/(.*last_updated:).*/\1 $DATE/g" "$METADATA"
 
 pandoc -f vimwiki -t html $INPUT \
