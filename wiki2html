@@ -27,6 +27,9 @@ METADATA_PATH="$SCRIPT_DIR"/metadata
 METADATA_INPUT_RELATIVE=$(realpath --relative-to "$SCRIPT_DIR" "$INPUT" | cut -f 1 -d ".").yml
 METADATA="$METADATA_PATH/$METADATA_INPUT_RELATIVE"
 
+DATA_PATH="$SCRIPT_DIR"/data
+FILTERS_PATH="$DATA_PATH"/filters
+
 DEFAULTS=$(cat <<- EOF
 template: $TEMPLATE_DEFAULT
 metadata:
@@ -43,6 +46,7 @@ fi
 
 sed -i -E "s/(.*last_updated:).*/\1 $DATE/g" "$METADATA"
 
-pandoc "$INPUT" -o "$OUTPUT" \
-    --data-dir "$SCRIPT_DIR" \
-    --defaults "$METADATA"
+pandoc -f vimwiki -t html $INPUT \
+    --output "$OUTPUT" \
+    --data-dir "$DATA_PATH" \
+    --defaults "$METADATA" \
