@@ -1,8 +1,3 @@
-%title Devzat
-%template post
-%date 2022-07-26
-
-
 == Introduction ==
 
 Devzat is a box on HackTheBox that involves heavily exploiting a user created chat app. The chat app
