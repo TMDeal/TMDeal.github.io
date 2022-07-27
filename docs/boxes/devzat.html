@@ -20,6 +20,21 @@
 
 <div id="Devzat-Introduction"><h2 id="Introduction" class="header"><a href="#Devzat-Introduction">Introduction</a></h2></div>
 
+<p>
+Devzat is a box in HackTheBox that involves heavily exploiting a user created chat app. The chat app
+does not seem to be usable for initial exploitation. However, after initial access, the app becomes
+a great source of system enumeration from the chat logs, as well as being able to be used to privesc
+to root. The initial access is gained from a subdomain hosting an incomplete CRUD app for managing
+an inventory of pets that has the .git directory publicly available. With access to the git folder,
+we can get the source for the web app and discover a command injection vulnerability that can be
+exploited with Burpsuite. Initial access as Patrick allows us to read his chat logs, revealing an
+Influxdb instance is running that is vulnerable to an authentication bypass. The database contains
+credentials for another user, Catherine, who we are then able to login as. Catherine's chat log
+reveals there is a development version of the chat app running on port 8443, and there is a backup
+file on the system. Analysis of the backed up files shows we can use app on port 8443 to read files
+as root. We can then read roots ssh key to login as root.
+</p>
+
 <div id="Devzat-Enumeration"><h2 id="Enumeration" class="header"><a href="#Devzat-Enumeration">Enumeration</a></h2></div>
 
 <div id="Devzat-Enumeration-Nmap"><h3 id="Nmap" class="header"><a href="#Devzat-Enumeration-Nmap">Nmap</a></h3></div>
@@ -217,7 +232,7 @@ From there, we can grab Patrick's ssh key for a better shell experience
 </p>
 
 <p>
-<img src="../../images/devzat/shell_as_patrick_ssh.png" />
+<img src="../../images/devzat/shell_as_patrick_ssh.png" alt="Shell as Patrick" />
 </p>
 
 <div id="Devzat-Shell as Catherine"><h2 id="Shell as Catherine" class="header"><a href="#Devzat-Shell as Catherine">Shell as Catherine</a></h2></div>
@@ -230,7 +245,7 @@ previously access
 </p>
 
 <p>
-<img src="../../images/devzat/linpeas/active_ports.png" />
+<img src="../../images/devzat/linpeas/active_ports.png" alt="Open local ports" />
 </p>
 
 <p>
@@ -244,7 +259,7 @@ We can see Patrick's chat log in their app by logging into it while logged into 
 </p>
 
 <p>
-<img src="../../images/devzat/patrick_chat_log.png" />
+<img src="../../images/devzat/patrick_chat_log.png" alt="Patrick chat log" />
 </p>
 
 <p>
@@ -253,12 +268,83 @@ Influxdb running by making a HEAD request with curl on port 8086
 </p>
 
 <p>
-<img src="../../images/devzat/influxdb/influxdb_version.png" />
+<img src="../../images/devzat/influxdb/influxdb_version.png" alt="Influxdb version" />
 </p>
 
 <p>
 Looking up "Influxdb 1.7.5" on google shows results for
 <a href="https://github.com/LorenzoTullini/InfluxDB-Exploit-CVE-2019-20933">CVE-2019-20933</a>. 
+</p>
+
+<p>
+With this exploit, we can bypass authentication and gain access to the database as an admin. We need
+to port forward with ssh in order to access the database on our machine.
+</p>
+
+<p>
+<code>ssh -L 8086:127.0.0.1:8086 patrick@10.10.11.118 -i patrick_id_rsa</code>.
+</p>
+
+<p>
+<img src="../../images/devzat/influxdb/admin_access.png" alt="Login as admin on Influxdb" />
+</p>
+
+<p>
+From there, we can dump the data from the users table
+</p>
+
+<p>
+<img src="../../images/devzat/influxdb/user_passwords.png" alt="Database dump" />
+</p>
+
+<p>
+This reveals a few users and their passwords, but Catherine sticks out because that is a user on the
+box. Attempting to use this password to switch users to Catherine is successful
+</p>
+
+<p>
+<img src="../../images/devzat/shell_as_catherine.png" alt="Shell as Catherine" />
+<img src="../../images/devzat/user_get.png" alt="User flag" />
+</p>
+
+<div id="Devzat-Shell as root"><h2 id="Shell as root" class="header"><a href="#Devzat-Shell as root">Shell as root</a></h2></div>
+
+<p>
+Now that we are Catherine, lets examine her chat log like we did to Patrick.
+</p>
+
+<p>
+<img src="../../images/devzat/catherine_chat_log.png" alt="Catherine chat log" />
+</p>
+
+<p>
+The chat log mentions the development version of the chat app is up on port 8443, and the source
+code is in a backup file. Checking in /var/backup we find archives of the development and main
+version.
+</p>
+
+<p>
+<img src="../../images/devzat/chat_app/backup_files.png" alt="Backup files" />
+</p>
+
+<p>
+Extracting and checking the this version of the code shows a new command <code>file</code> has been added that
+allows reading files on the system. A password is required, but it is hardcoded into the app, so we
+can just read it. Since this program is running as root, we can read roots ssh key
+</p>
+
+<p>
+<img src="../../images/devzat/dev_chat_app/pass_for_reading_files.png" alt="Command password" />
+<img src="../../images/devzat/dev_chat_app/root_ssh_key.png" alt="Reading root ssh key" />
+</p>
+
+<p>
+Then we can just ssh as root
+</p>
+
+<p>
+<img src="../../images/devzat/shell_as_root.png" alt="Shell as root" />
+<img src="../../images/devzat/root_get.png" alt="Root flag" />
 </p>
 
     <script type="text/javascript"
