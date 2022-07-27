@@ -41,7 +41,7 @@ if [ ! -f "$METADATA" ]; then
     printf "$DEFAULTS" > "$METADATA"
 fi
 
-sed -i -E "s/(.*last_updated:).*/\1 test/g" "$METADATA"
+sed -i -E "s/(.*last_updated:).*/\1 $DATE/g" "$METADATA"
 
 pandoc "$INPUT" -o "$OUTPUT" \
     --data-dir "$SCRIPT_DIR" \
