@@ -5,10 +5,14 @@ SYNTAX="$2"
 EXTENSION="$3"
 OUTPUTDIR="$4"
 INPUT="$5"
-CSSFILE="$6"
 TEMPLATE_PATH="$7"
 TEMPLATE_DEFAULT="$8"
-TEMPLATE_PATH="$9"
+
+if [ "${11}" == "-" ]; then
+    WEBROOT="http://127.0.0.1:8080"
+else
+    WEBROOT="${11}"
+fi
 
 SCRIPT_FILE="$(readlink -f "$0" 2>/dev/null || readlink "$0" 2>/dev/null || echo "$0")"
 SCRIPT_DIR="${SCRIPT_FILE%/*}"
@@ -33,6 +37,7 @@ FILTERS_PATH="$DATA_PATH"/filters
 DEFAULTS=$(cat <<- EOF
 template: $TEMPLATE_DEFAULT
 metadata:
+    webroot: $WEBROOT
     title: ${TITLE^}
     created_at: $DATE
     last_updated: $DATE
@@ -44,6 +49,7 @@ if [ ! -f "$METADATA" ]; then
     printf "$DEFAULTS" > "$METADATA"
 fi
 
+sed -i -E "s,(.*webroot:).*,\1 $WEBROOT,g" "$METADATA"
 sed -i -E "s/(.*last_updated:).*/\1 $DATE/g" "$METADATA"
 
 pandoc -f vimwiki -t html $INPUT \
