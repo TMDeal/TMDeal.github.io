@@ -3,6 +3,8 @@
 SCRIPT_FILE="$(readlink -f "$0" 2>/dev/null || readlink "$0" 2>/dev/null || echo "$0")"
 SCRIPT_DIR="${SCRIPT_FILE%/*}"
 
+BUILD_ENVIRONMENT="$1"
+
 FORCE=1
 SYNTAX="default"
 EXTENSION="wiki"
@@ -12,7 +14,12 @@ TEMPLATE_PATH="$SCRIPT_DIR/templates"
 TEMPLATE_DEFAULT="default"
 TEMPLATE_EXT="-"
 ROOT_PATH="-"
-WEBROOT="http://127.0.0.1:8080"
+
+if [ $BUILD_ENVIRONMENT == "prod" ]; then
+    WEBROOT="https://TMDeal.github.io"
+else
+    WEBROOT="http://127.0.0.1:8080"
+fi
 
 echo "[!] Copying assets into $OUTPUTDIR"
 
