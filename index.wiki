@@ -1,5 +1,3 @@
-= HackTheBox Writeups =
+= [[index|Home]] =
 
-* [X] [[boxes/devzat|Devzat]]
-    * [X] User Flag
-    * [X] Root Flag
+=== [[htb/index|HackTheBox Writeups]] ===

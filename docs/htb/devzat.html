@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="date" content="2022-07-26" scheme="YYYY-MM-DD">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>devzat</title>
+    <title>Devzat</title>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="no title"
         charset="utf-8">
     <link rel="stylesheet" type="text/css"
@@ -15,13 +15,15 @@
 </head>
 
 <body>
+    <h1 id="title" class="header"><a href="#Devzat">Devzat</a></h1>
+    created at: 2022-07-26
     
-<div id="Devzat"><h1 id="Devzat" class="header"><a href="#Devzat">Devzat</a></h1></div>
 
-<div id="Devzat-Introduction"><h2 id="Introduction" class="header"><a href="#Devzat-Introduction">Introduction</a></h2></div>
+
+<div id="Introduction"><h2 id="Introduction" class="header"><a href="#Introduction">Introduction</a></h2></div>
 
 <p>
-Devzat is a box in HackTheBox that involves heavily exploiting a user created chat app. The chat app
+Devzat is a box on HackTheBox that involves heavily exploiting a user created chat app. The chat app
 does not seem to be usable for initial exploitation. However, after initial access, the app becomes
 a great source of system enumeration from the chat logs, as well as being able to be used to privesc
 to root. The initial access is gained from a subdomain hosting an incomplete CRUD app for managing
@@ -35,9 +37,9 @@ file on the system. Analysis of the backed up files shows we can use app on port
 as root. We can then read roots ssh key to login as root.
 </p>
 
-<div id="Devzat-Enumeration"><h2 id="Enumeration" class="header"><a href="#Devzat-Enumeration">Enumeration</a></h2></div>
+<div id="Enumeration"><h2 id="Enumeration" class="header"><a href="#Enumeration">Enumeration</a></h2></div>
 
-<div id="Devzat-Enumeration-Nmap"><h3 id="Nmap" class="header"><a href="#Devzat-Enumeration-Nmap">Nmap</a></h3></div>
+<div id="Enumeration-Nmap"><h3 id="Nmap" class="header"><a href="#Enumeration-Nmap">Nmap</a></h3></div>
 
 <p>
 From the nmap results, we can see that this is a webserver with an unidentified app on port 8000.
@@ -90,7 +92,7 @@ HOP RTT      ADDRESS
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 </pre>
 
-<div id="Devzat-Enumeration-Website - [[http://devzat.htb]]"><h3 id="Website - [[http://devzat.htb]]" class="header"><a href="#Devzat-Enumeration-Website - [[http://devzat.htb]]">Website - <a href="http://devzat.htb">http://devzat.htb</a></a></h3></div>
+<div id="Enumeration-Website - [[http://devzat.htb]]"><h3 id="Website - [[http://devzat.htb]]" class="header"><a href="#Enumeration-Website - [[http://devzat.htb]]">Website - <a href="http://devzat.htb">http://devzat.htb</a></a></h3></div>
 
 <p>
 Initial scanning shows the box has a website up. Trying to navigate to the website redirects us to
@@ -99,7 +101,9 @@ Initial scanning shows the box has a website up. Trying to navigate to the websi
 
 <pre class="nohighlight">
 trent@TMDeal-kali[Devzat]$ cat /etc/hosts
+...
 10.10.14.1    devzat.htb
+...
 </pre>
 
 <p>
@@ -136,14 +140,14 @@ Then we can run the command to gain access to the chat app
 <img src="../../images/devzat/chat_app/initial_connection.png" alt="Initial Connection" />
 </p>
 
-<div id="Devzat-Enumeration-Chat App First Look"><h3 id="Chat App First Look" class="header"><a href="#Devzat-Enumeration-Chat App First Look">Chat App First Look</a></h3></div>
+<div id="Enumeration-Chat App First Look"><h3 id="Chat App First Look" class="header"><a href="#Enumeration-Chat App First Look">Chat App First Look</a></h3></div>
 
 <p>
 With just the basic level of access we have, there is not much that can be done with the app right
 now. We will come back to this at a later point
 </p>
 
-<div id="Devzat-Enumeration-Subdomin - [[http://pets.devzat.htb]]"><h3 id="Subdomin - [[http://pets.devzat.htb]]" class="header"><a href="#Devzat-Enumeration-Subdomin - [[http://pets.devzat.htb]]">Subdomin - <a href="http://pets.devzat.htb">http://pets.devzat.htb</a></a></h3></div>
+<div id="Enumeration-Subdomin - [[http://pets.devzat.htb]]"><h3 id="Subdomin - [[http://pets.devzat.htb]]" class="header"><a href="#Enumeration-Subdomin - [[http://pets.devzat.htb]]">Subdomin - <a href="http://pets.devzat.htb">http://pets.devzat.htb</a></a></h3></div>
 
 <p>
 Taking a look back at port 80, since we needed to add an entry to /etc/hosts, it may be worthwhile
@@ -167,8 +171,7 @@ app.
 The most that can be done is adding a pet to the pet inventory, but its not hooked up to a database
 so nothing saves. Running Gobuster to find other endpoints shows that <a href="http://pets.devzat.htb/.git/">http://pets.devzat.htb/.git/</a>
 is publicly readable. We can grab the contents of the folder with
-<a href="https://pypi.org/project/git-dumper/">git-dumper</a>, but we can also just download the directory
-with a tool like wget.
+<a href="https://pypi.org/project/git-dumper/">git-dumper</a>.
 </p>
 
 <pre class="nohighlight">
@@ -192,16 +195,16 @@ drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static
 </pre>
 
 <p>
-This is probably the source code for the pets web application. Inside of main.go, there is a line
-where that takes out input without sanitizing it and passes it to <code>exec.Command</code>. This means we can
-inject our own commands into this command and gain remote code execution
+This is probably the source code for the pets web application. Inside of main.go, there is code that
+takes our input without sanitizing it and passes it to <code>exec.Command</code>. This means we can inject our
+own commands into this command and gain remote code execution
 </p>
 
 <p>
 <img src="../../images/devzat/git/main_execs_sh.png" alt="Call to exec.Command" />
 </p>
 
-<div id="Devzat-Shell as Patrick"><h2 id="Shell as Patrick" class="header"><a href="#Devzat-Shell as Patrick">Shell as Patrick</a></h2></div>
+<div id="Shell as Patrick"><h2 id="Shell as Patrick" class="header"><a href="#Shell as Patrick">Shell as Patrick</a></h2></div>
 
 <p>
 To test if we can properly execute code, we will just see if we can get the contents of /etc/passwd
@@ -235,9 +238,9 @@ From there, we can grab Patrick's ssh key for a better shell experience
 <img src="../../images/devzat/shell_as_patrick_ssh.png" alt="Shell as Patrick" />
 </p>
 
-<div id="Devzat-Shell as Catherine"><h2 id="Shell as Catherine" class="header"><a href="#Devzat-Shell as Catherine">Shell as Catherine</a></h2></div>
+<div id="Shell as Catherine"><h2 id="Shell as Catherine" class="header"><a href="#Shell as Catherine">Shell as Catherine</a></h2></div>
 
-<div id="Devzat-Shell as Catherine-Interesting ports"><h3 id="Interesting ports" class="header"><a href="#Devzat-Shell as Catherine-Interesting ports">Interesting ports</a></h3></div>
+<div id="Shell as Catherine-Interesting ports"><h3 id="Interesting ports" class="header"><a href="#Shell as Catherine-Interesting ports">Interesting ports</a></h3></div>
 
 <p>
 After running linpeas, we can see that there are some ports that are open locally that we could not
@@ -252,10 +255,11 @@ previously access
 Right now, we do not know what these ports do, so we will look around some more.
 </p>
 
-<div id="Devzat-Shell as Catherine-Patrick Chat Log"><h3 id="Patrick Chat Log" class="header"><a href="#Devzat-Shell as Catherine-Patrick Chat Log">Patrick Chat Log</a></h3></div>
+<div id="Shell as Catherine-Patrick Chat Log"><h3 id="Patrick Chat Log" class="header"><a href="#Shell as Catherine-Patrick Chat Log">Patrick Chat Log</a></h3></div>
 
 <p>
-We can see Patrick's chat log in their app by logging into it while logged into the machine
+We can see Patrick's chat log in the chat app by logging into it while logged into the machine as
+Patrick
 </p>
 
 <p>
@@ -263,8 +267,9 @@ We can see Patrick's chat log in their app by logging into it while logged into 
 </p>
 
 <p>
-Looking up info on Influxdb shows that it runs on port 8086 by default. We can check the version of
-Influxdb running by making a HEAD request with curl on port 8086
+Looking up info on Influxdb shows that it runs on port 8086 by default, and is thus likely what we
+saw earlier in linpeas. We can check the version of Influxdb running by making a HEAD request with
+curl on port 8086
 </p>
 
 <p>
@@ -307,10 +312,10 @@ box. Attempting to use this password to switch users to Catherine is successful
 <img src="../../images/devzat/user_get.png" alt="User flag" />
 </p>
 
-<div id="Devzat-Shell as root"><h2 id="Shell as root" class="header"><a href="#Devzat-Shell as root">Shell as root</a></h2></div>
+<div id="Shell as root"><h2 id="Shell as root" class="header"><a href="#Shell as root">Shell as root</a></h2></div>
 
 <p>
-Now that we are Catherine, lets examine her chat log like we did to Patrick.
+Now that we are Catherine, lets examine her chat log like we did for Patrick.
 </p>
 
 <p>
@@ -334,7 +339,7 @@ can just read it. Since this program is running as root, we can read roots ssh k
 </p>
 
 <p>
-<img src="../../images/devzat/dev_chat_app/pass_for_reading_files.png" alt="Command password" />
+<img src="../../images/devzat/dev_chat_app/pass_for_reading_files.png" alt="Password to run command" />
 <img src="../../images/devzat/dev_chat_app/root_ssh_key.png" alt="Reading root ssh key" />
 </p>
 

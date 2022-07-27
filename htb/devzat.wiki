@@ -1,8 +1,11 @@
-= Devzat =
+%title Devzat
+%template post
+%date 2022-07-26
+
 
 == Introduction ==
 
-Devzat is a box in HackTheBox that involves heavily exploiting a user created chat app. The chat app
+Devzat is a box on HackTheBox that involves heavily exploiting a user created chat app. The chat app
 does not seem to be usable for initial exploitation. However, after initial access, the app becomes
 a great source of system enumeration from the chat logs, as well as being able to be used to privesc
 to root. The initial access is gained from a subdomain hosting an incomplete CRUD app for managing
@@ -75,7 +78,9 @@ Initial scanning shows the box has a website up. Trying to navigate to the websi
 
 {{{class="nohighlight"
 trent@TMDeal-kali[Devzat]$ cat /etc/hosts
+...
 10.10.14.1    devzat.htb
+...
 }}}
 
 {{local:../images/devzat/website/homepage.png|http://devzat.htb Homepage}}
@@ -120,8 +125,7 @@ app.
 The most that can be done is adding a pet to the pet inventory, but its not hooked up to a database
 so nothing saves. Running Gobuster to find other endpoints shows that [[http://pets.devzat.htb/.git/]]
 is publicly readable. We can grab the contents of the folder with
-[[https://pypi.org/project/git-dumper/|git-dumper]], but we can also just download the directory
-with a tool like wget.
+[[https://pypi.org/project/git-dumper/|git-dumper]].
 
 {{{class="nohighlight"
 trent@TMDeal-kali[Devzat]$ git-dumper http://pets.devzat.htb/.git pets
@@ -143,9 +147,9 @@ drwxr-xr-x  7 trent trent    4096 Jul 26 17:44 .git
 drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static
 }}}
 
-This is probably the source code for the pets web application. Inside of main.go, there is a line
-where that takes out input without sanitizing it and passes it to `exec.Command`. This means we can
-inject our own commands into this command and gain remote code execution
+This is probably the source code for the pets web application. Inside of main.go, there is code that
+takes our input without sanitizing it and passes it to `exec.Command`. This means we can inject our
+own commands into this command and gain remote code execution
 
 {{local:../images/devzat/git/main_execs_sh.png|Call to exec.Command}}
 
@@ -182,12 +186,14 @@ Right now, we do not know what these ports do, so we will look around some more.
 
 === Patrick Chat Log ===
 
-We can see Patrick's chat log in their app by logging into it while logged into the machine
+We can see Patrick's chat log in the chat app by logging into it while logged into the machine as
+Patrick
 
 {{local:../images/devzat/patrick_chat_log.png|Patrick chat log}}
 
-Looking up info on Influxdb shows that it runs on port 8086 by default. We can check the version of
-Influxdb running by making a HEAD request with curl on port 8086
+Looking up info on Influxdb shows that it runs on port 8086 by default, and is thus likely what we
+saw earlier in linpeas. We can check the version of Influxdb running by making a HEAD request with
+curl on port 8086
 
 {{local:../images/devzat/influxdb/influxdb_version.png|Influxdb version}}
 
@@ -213,7 +219,7 @@ box. Attempting to use this password to switch users to Catherine is successful
 
 == Shell as root ==
 
-Now that we are Catherine, lets examine her chat log like we did to Patrick.
+Now that we are Catherine, lets examine her chat log like we did for Patrick.
 
 {{local:../images/devzat/catherine_chat_log.png|Catherine chat log}}
 
@@ -227,7 +233,7 @@ Extracting and checking the this version of the code shows a new command `file` 
 allows reading files on the system. A password is required, but it is hardcoded into the app, so we
 can just read it. Since this program is running as root, we can read roots ssh key
 
-{{local:../images/devzat/dev_chat_app/pass_for_reading_files.png|Command password}}
+{{local:../images/devzat/dev_chat_app/pass_for_reading_files.png|Password to run command}}
 {{local:../images/devzat/dev_chat_app/root_ssh_key.png|Reading root ssh key}}
 
 Then we can just ssh as root
