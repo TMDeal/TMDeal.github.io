@@ -1,0 +1,48 @@
+#!/bin/bash
+
+FORCE="$1"
+SYNTAX="$2"
+EXTENSION="$3"
+OUTPUTDIR="$4"
+INPUT="$5"
+CSSFILE="$6"
+TEMPLATE_PATH="$7"
+TEMPLATE_DEFAULT="$8"
+TEMPLATE_PATH="$9"
+
+SCRIPT_FILE="$(readlink -f "$0" 2>/dev/null || readlink "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="${SCRIPT_FILE%/*}"
+
+FORCEFLAG=
+
+[ $FORCE -eq 0 ] || { FORCEFLAG="-f"; };
+[ $SYNTAX = "default" ] || { echo "Error: Unsupported syntax"; exit -2; };
+
+OUTPUT="$OUTPUTDIR"/$(basename "$INPUT" .$EXTENSION).html
+
+TITLE=$(basename "$INPUT" .$EXTENSION)
+DATE=$(date +"%Y-%m-%d")
+
+METADATA_PATH="$SCRIPT_DIR"/metadata
+METADATA_INPUT_RELATIVE=$(realpath --relative-to "$SCRIPT_DIR" "$INPUT" | cut -f 1 -d ".").yml
+METADATA="$METADATA_PATH/$METADATA_INPUT_RELATIVE"
+
+DEFAULTS=$(cat <<- EOF
+template: $TEMPLATE_DEFAULT
+metadata:
+    title: ${TITLE^}
+    created_at: $DATE
+    last_updated: $DATE
+EOF
+)
+
+if [ ! -f "$METADATA" ]; then
+    mkdir -p "$METADATA_PATH/$(dirname $METADATA_INPUT_RELATIVE)"
+    printf "$DEFAULTS" > "$METADATA"
+fi
+
+sed -i -E "s/(.*last_updated:).*/\1 test/g" "$METADATA"
+
+pandoc "$INPUT" -o "$OUTPUT" \
+    --data-dir "$SCRIPT_DIR" \
+    --defaults "$METADATA"
