@@ -1,4 +1,5 @@
 DATA_DIR := pandoc
+FILTERS_DIR := $(DATA_DIR)/filters
 IMAGE_DIR := images
 OUTPUT_DIR := docs
 META_DIR := meta
@@ -41,7 +42,11 @@ serve:
 $(OUTPUT_DIR)/%.html: %.wiki
 	@echo "Building $?"
 	@mkdir -p $(shell dirname $@)
-	@$(BUILD_SCRIPT) "$?" "$@" "$(DATA_DIR)" "$(addprefix $(META_DIR)/, $(?:%.wiki=%.yml))"
+	@pandoc -f vimwiki -t html "$?" \
+		--output "$@" \
+		--data-dir "$(DATA_DIR)" \
+		--defaults "$(addprefix $(META_DIR)/, $(?:%.wiki=%.yml))" \
+		--lua-filter "$(FILTERS_DIR)/fix_images.lua"
 
 $(OUTPUT_DIR)/$(IMAGE_DIR)/%.png: $(IMAGE_DIR)/%.png
 	@echo "Copying $? to $@"
