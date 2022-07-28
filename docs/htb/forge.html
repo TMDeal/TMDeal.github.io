@@ -6,7 +6,7 @@
     <meta name="date" content="" scheme="YYYY-MM-DD">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Forge</title>
-    <link rel="stylesheet" href="http://127.0.0.1:8888/css/main.css" type="text/css" media="screen" title="no title"
+    <link rel="stylesheet" href="https://TMDeal.github.io/css/main.css" type="text/css" media="screen" title="no title"
         charset="utf-8">
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/nord.min.css" />
@@ -15,6 +15,10 @@
 </head>
 
 <body>
+    <h1 id="title" class="header"><a href="#Forge">Forge</a></h1>
+    <p>Created at: 2022-07-27</p>
+    <p>Last updated: 2022-07-28</p>
+
     <h2 id="Introduction">Introduction</h2>
     <h2 id="Enumeration">Enumeration</h2>
     <h3 id="Nmap">Nmap</h3>
@@ -68,10 +72,10 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
 2022/07/27 18:49:25 Finished
 ===============================================================</code></pre>
     <p><img
-    src="http://127.0.0.1:8888/images/forge/website/admin/only_localhost_allowed.png"
+    src="https://TMDeal.github.io/images/forge/website/admin/only_localhost_allowed.png"
     alt="Admin interface only available on localhost" /></p>
     <p><img
-    src="http://127.0.0.1:8888/images/forge/website/homepage.png"
+    src="https://TMDeal.github.io/images/forge/website/homepage.png"
     alt="Homepage for http://forge.htb" /></p>
     <ul>
     <li><a href="http://forge.htb/upload">http://forge.htb/upload</a>
@@ -80,9 +84,9 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
     shows the request was made by python-requests/2.25.1</li>
     </ul>
     <p><img
-    src="http://127.0.0.1:8888/images/forge/website/upload_from_url.png"
+    src="https://TMDeal.github.io/images/forge/website/upload_from_url.png"
     alt="Upload from url" /> <img
-    src="http://127.0.0.1:8888/images/forge/website/python_requests_callback.png"
+    src="https://TMDeal.github.io/images/forge/website/python_requests_callback.png"
     alt="python-requests version" /></p>
     <ul>
     <li>url uploads only accept http/https</li>
@@ -131,14 +135,15 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
     page as a jpg, but we can see the html in Burpsuite</li>
     </ul>
     <p><img
-    src="http://127.0.0.1:8888/images/forge/website/admin/homepage_html_via_ssrf_redirect.png"
+    src="https://TMDeal.github.io/images/forge/website/admin/homepage_html_via_ssrf_redirect.png"
     alt="Successful ssrf attack" /></p>
     <ul>
     <li>we have found some ftp creds, yay</li>
     </ul>
     <p><img
-    src="http://127.0.0.1:8888/images/forge/website/admin/ftp_credentials.png"
+    src="https://TMDeal.github.io/images/forge/website/admin/ftp_credentials.png"
     alt="FTP credentials" /></p>
+
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
     <script type="text/javascript">
