@@ -14,11 +14,10 @@ TEMPLATE_PATH="$SCRIPT_DIR/templates"
 TEMPLATE_DEFAULT="default"
 TEMPLATE_EXT="-"
 ROOT_PATH="-"
+WEBROOT="-"
 
-if [ $BUILD_ENVIRONMENT == "prod" ]; then
+if [ "$BUILD_ENVIRONMENT" == "prod" ]; then
     WEBROOT="https://TMDeal.github.io"
-else
-    WEBROOT="http://127.0.0.1:8080"
 fi
 
 echo "[!] Copying assets into $OUTPUTDIR"

@@ -12,7 +12,7 @@ TEMPLATE_DEFAULT="$8"
 
 # vimwiki sets an unset argument as a "-" instead of "". Was a little annoying
 if [ "${11}" == "-" ]; then
-    WEBROOT="http://127.0.0.1:8080"
+    WEBROOT="http://127.0.0.1:8888"
 else
     WEBROOT="${11}"
 fi
