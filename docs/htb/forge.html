@@ -6,7 +6,7 @@
     <meta name="date" content="" scheme="YYYY-MM-DD">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Forge</title>
-    <link rel="stylesheet" href="/css/main.css" type="text/css" media="screen" title="no title"
+    <link rel="stylesheet" href="https://TMDeal.github.io/css/main.css" type="text/css" media="screen" title="no title"
         charset="utf-8">
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/nord.min.css" />
@@ -71,9 +71,11 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
 ===============================================================
 2022/07/27 18:49:25 Finished
 ===============================================================</code></pre>
-    <p><img src="/images/forge/website/admin/only_localhost_allowed.png"
+    <p><img
+    src="https://TMDeal.github.io/images/forge/website/admin/only_localhost_allowed.png"
     alt="Admin interface only available on localhost" /></p>
-    <p><img src="/images/forge/website/homepage.png"
+    <p><img
+    src="https://TMDeal.github.io/images/forge/website/homepage.png"
     alt="Homepage for http://forge.htb" /></p>
     <ul>
     <li><a href="http://forge.htb/upload">http://forge.htb/upload</a>
@@ -81,9 +83,10 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
     <li>uploading by url and making it callback to a netcat listener
     shows the request was made by python-requests/2.25.1</li>
     </ul>
-    <p><img src="/images/forge/website/upload_from_url.png"
+    <p><img
+    src="https://TMDeal.github.io/images/forge/website/upload_from_url.png"
     alt="Upload from url" /> <img
-    src="/images/forge/website/python_requests_callback.png"
+    src="https://TMDeal.github.io/images/forge/website/python_requests_callback.png"
     alt="python-requests version" /></p>
     <ul>
     <li>url uploads only accept http/https</li>
@@ -132,12 +135,13 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
     page as a jpg, but we can see the html in Burpsuite</li>
     </ul>
     <p><img
-    src="/images/forge/website/admin/homepage_html_via_ssrf_redirect.png"
+    src="https://TMDeal.github.io/images/forge/website/admin/homepage_html_via_ssrf_redirect.png"
     alt="Successful ssrf attack" /></p>
     <ul>
     <li>we have found some ftp creds, yay</li>
     </ul>
-    <p><img src="/images/forge/website/admin/ftp_credentials.png"
+    <p><img
+    src="https://TMDeal.github.io/images/forge/website/admin/ftp_credentials.png"
     alt="FTP credentials" /></p>
 
     <script type="text/javascript"
