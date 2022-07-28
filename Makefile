@@ -36,8 +36,8 @@ assets: $(IMAGE_FILES) $(CSS_FILES)
 meta: $(META_FILES)
 
 .PHONY: serve
-serve:
-	@five-server $(OUTPUT_DIR)
+serve: build
+	@five-server --no-browser $(OUTPUT_DIR)
 
 $(OUTPUT_DIR)/%.html: %.wiki
 	@echo "Building $?"
