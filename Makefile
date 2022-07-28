@@ -34,6 +34,10 @@ assets: $(IMAGE_FILES) $(CSS_FILES)
 .PHONY: meta
 meta: $(META_FILES)
 
+.PHONY: serve
+serve:
+	@five-server $(OUTPUT_DIR)
+
 $(OUTPUT_DIR)/%.html: %.wiki
 	@echo "Building $?"
 	@mkdir -p $(shell dirname $@)
