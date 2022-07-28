@@ -61,7 +61,7 @@ $(OUTPUT_DIR)/$(CSS_DIR)/%.css: $(CSS_DIR)/%.css
 
 $(META_DIR)/%.yml: %.wiki
 	@echo "Updating metadata for $?"
-	@./scripts/update_meta "$@"
+	@$(UPDATE_META_SCRIPT) "$@"
 
 .PHONY: clean-meta
 clean-meta:
