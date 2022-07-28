@@ -79,7 +79,8 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
     <li><a href="http://forge.htb/upload">http://forge.htb/upload</a>
     can be used to upload images by file or url</li>
     <li>uploading by url and making it callback to a netcat listener
-    shows the request was made by python-requests/2.25.1</li>
+    shows the request was made by python-requests/2.25.1, so the server
+    is likely running some python web server</li>
     </ul>
     <p><img src="/images/forge/website/upload_from_url.png"
     alt="Upload from url" /> <img
@@ -101,11 +102,9 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
     title="wikilink">Blacklisted urls</a></p>
     <ul>
     <li>we can get around the blacklist by redirecting to where we
-    actually want to go</li>
+    actually want to go. We then can navigate to the generated link on
+    the website and we can view the raw page in burpsuite</li>
     </ul>
-    <ul>
-    <li><span class="done0"></span>TODO - Write a script that does this
-    whole ssrf thing without pain and suffering
     <div class="sourceCode" id="cb4"><pre
     class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env python3</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -125,8 +124,7 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>       <span class="va">self</span>.send_header(<span class="st">&#39;Location&#39;</span>, sys.argv[<span class="dv">2</span>])</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>       <span class="va">self</span>.end_headers()</span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>HTTPServer((<span class="st">&quot;&quot;</span>, <span class="bu">int</span>(sys.argv[<span class="dv">1</span>])), Redirect).serve_forever()</span></code></pre></div></li>
-    </ul>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>HTTPServer((<span class="st">&quot;&quot;</span>, <span class="bu">int</span>(sys.argv[<span class="dv">1</span>])), Redirect).serve_forever()</span></code></pre></div>
     <ul>
     <li>We cant see the site in the browser cause it tries to render the
     page as a jpg, but we can see the html in Burpsuite</li>
@@ -135,10 +133,95 @@ Found: admin.forge.htb (Status: 200) [Size: 27]
     src="/images/forge/website/admin/homepage_html_via_ssrf_redirect.png"
     alt="Successful ssrf attack" /></p>
     <ul>
-    <li>we have found some ftp creds, yay</li>
+    <li>we have found some ftp creds, yay
+    <ul>
+    <li>user:heightofsecurity123!</li>
+    </ul></li>
     </ul>
-    <p><img src="/images/forge/website/admin/ftp_credentials.png"
-    alt="FTP credentials" /></p>
+    <p><img src="/images/forge/website/admin/announcements.png"
+    alt="FTP credentials and internal /upload" /></p>
+    <ul>
+    <li>making a call to <a
+    href="http://admin.forge.htb">http://admin.forge.htb</a> with the
+    creds shows the ftp files, had to escape the ! in the password to
+    make the script work
+    <pre class="nohighlight"><code>trent@kali[Forge]$ ./redirect.py &quot;http://admin.forge.htb/upload?u=ftp://user:heightofsecurity123%21@10.10.11.111&quot;
+10.10.11.111 - - [28/Jul/2022 17:14:08] &quot;GET / HTTP/1.1&quot; 302 -</code></pre></li>
+    </ul>
+    <ul>
+    <li>running the same script to search for .ssh in ftp shows there is
+    an id_rsa there. Score</li>
+    </ul>
+    <p><img src="/images/forge/ftp/ssh_folder.png"
+    alt="ftp ssh folder" /> <img src="/images/forge/ftp/id_rsa.png"
+    alt="ftp id_rsa" /></p>
+    <ul>
+    <li>we can then login as the "user" user with ssh</li>
+    </ul>
+    <p><img src="/images/forge/shell_as_user.png" alt="Shell as user" />
+    <img src="/images/forge/user_get.png" alt="User flag" /></p>
+    <ul>
+    <li>running linpeas shows "user" can run "/usr/bin/python3
+    /opt/remote-manage.py" without a password</li>
+    </ul>
+    <p><img src="/images/forge/linpeas/sudo_l.png"
+    alt="linpeas sudo -l results" /></p>
+    <div class="sourceCode" id="cb6"><pre
+    class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># /opt/remote-manage.py</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env python3</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> socket</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pdb</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>port <span class="op">=</span> random.randint(<span class="dv">1025</span>, <span class="dv">65535</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    sock <span class="op">=</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="dv">1</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    sock.bind((<span class="st">&#39;127.0.0.1&#39;</span>, port))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    sock.listen(<span class="dv">1</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&#39;Listening on localhost:</span><span class="sc">{</span>port<span class="sc">}</span><span class="ss">&#39;</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    (clientsock, addr) <span class="op">=</span> sock.accept()</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    clientsock.send(<span class="st">b&#39;Enter the secret passsword: &#39;</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> clientsock.recv(<span class="dv">1024</span>).strip().decode() <span class="op">!=</span> <span class="st">&#39;secretadminpassword&#39;</span>:</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        clientsock.send(<span class="st">b&#39;Wrong password!</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        clientsock.send(<span class="st">b&#39;Welcome admin!</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>            clientsock.send(<span class="st">b&#39;</span><span class="ch">\n</span><span class="st">What do you wanna do: </span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>            clientsock.send(<span class="st">b&#39;[1] View processes</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>            clientsock.send(<span class="st">b&#39;[2] View free memory</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>            clientsock.send(<span class="st">b&#39;[3] View listening sockets</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>            clientsock.send(<span class="st">b&#39;[4] Quit</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            option <span class="op">=</span> <span class="bu">int</span>(clientsock.recv(<span class="dv">1024</span>).strip())</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> option <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>                clientsock.send(subprocess.getoutput(<span class="st">&#39;ps aux&#39;</span>).encode())</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> option <span class="op">==</span> <span class="dv">2</span>:</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>                clientsock.send(subprocess.getoutput(<span class="st">&#39;df&#39;</span>).encode())</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> option <span class="op">==</span> <span class="dv">3</span>:</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>                clientsock.send(subprocess.getoutput(<span class="st">&#39;ss -lnt&#39;</span>).encode())</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> option <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>                clientsock.send(<span class="st">b&#39;Bye</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    pdb.post_mortem(e.__traceback__)</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    quit()</span></code></pre></div>
+    <ul>
+    <li>script runs pdb when it hits an exception, which we can force by
+    sending a lot of characters to the socket.
+    <ul>
+    <li>To do this, we need to open an ssh session that runs the script,
+    and another that connects to it, since it only listens on
+    localhost</li>
+    <li>then we can import os and execute code from there in pdb</li>
+    </ul></li>
+    </ul>
+    <p><img src="/images/forge/shell_as_root.png" alt="Shell as root" />
+    <img src="/images/forge/root_get.png" alt="Root flag" /></p>
 
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
