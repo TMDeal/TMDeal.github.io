@@ -6,7 +6,7 @@
     <meta name="date" content="" scheme="YYYY-MM-DD">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Devzat</title>
-    <link rel="stylesheet" href="http://127.0.0.1:8888/css/main.css" type="text/css" media="screen" title="no title"
+    <link rel="stylesheet" href="https://TMDeal.github.io/css/main.css" type="text/css" media="screen" title="no title"
         charset="utf-8">
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/nord.min.css" />
@@ -98,13 +98,13 @@ OS and Service detection performed. Please report any incorrect results at https
 10.10.14.1    devzat.htb
 ...</code></pre>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/website/homepage.png"
+    src="https://TMDeal.github.io/images/devzat/website/homepage.png"
     alt="http://devzat.htb Homepage" /></p>
     <p>Not much about the site itself is interesting. However, there is
     a message at the bottom informing the reader that they are invited
     to try out their chat app.</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/website/chat_app_start_instructions.png"
+    src="https://TMDeal.github.io/images/devzat/website/chat_app_start_instructions.png"
     alt="Chat app usage" /></p>
     <p>When running the instructed command, you may receive an error
     about no matching host key type. This error can be resolved by
@@ -116,7 +116,7 @@ OS and Service detection performed. Please report any incorrect results at https
     HostkeyAlgorithms +ssh-rsa</code></pre>
     <p>Then we can run the command to gain access to the chat app</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/chat_app/initial_connection.png"
+    src="https://TMDeal.github.io/images/devzat/chat_app/initial_connection.png"
     alt="Initial Connection" /></p>
     <h3 id="Chat App First Look">Chat App First Look</h3>
     <p>With just the basic level of access we have, there is not much
@@ -128,13 +128,13 @@ OS and Service detection performed. Please report any incorrect results at https
     /etc/hosts, it may be worthwhile to scan for subdomains. We will
     scan for subdomains using Gobuster.</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/website/pets/gobuster_subdomain_discovery.png"
+    src="https://TMDeal.github.io/images/devzat/website/pets/gobuster_subdomain_discovery.png"
     alt="Pets Subdomain Discovery" /></p>
     <p>Our scan finds one valid subdomain at <a
     href="http://pets.devzat.htb">http://pets.devzat.htb</a> The
     homepage is an incomplete CRUD app.</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/website/pets/homepage.png"
+    src="https://TMDeal.github.io/images/devzat/website/pets/homepage.png"
     alt="http://pets.devzat.htb Homepage" /></p>
     <p>The most that can be done is adding a pet to the pet inventory,
     but its not hooked up to a database so nothing saves. Running
@@ -165,15 +165,15 @@ drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static</code></pre>
     we can inject our own commands into this command and gain remote
     code execution</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/git/main_execs_sh.png"
+    src="https://TMDeal.github.io/images/devzat/git/main_execs_sh.png"
     alt="Call to exec.Command" /></p>
     <h2 id="Shell as Patrick">Shell as Patrick</h2>
     <p>To test if we can properly execute code, we will just see if we
     can get the contents of /etc/passwd</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/git/burp_payload.png"
+    src="https://TMDeal.github.io/images/devzat/git/burp_payload.png"
     alt="Burp Payload" /> <img
-    src="http://127.0.0.1:8888/images/devzat/git/dumping_etc_passwd.png"
+    src="https://TMDeal.github.io/images/devzat/git/dumping_etc_passwd.png"
     alt="Contents of /etc/passwd" /></p>
     <p>Now that we now we can actually exploit this, we can execute a
     callback to a netcat listener.</p>
@@ -183,21 +183,21 @@ drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static</code></pre>
     avoid messing up the payload with special characters like
     <code>"</code> or <code>'</code>.</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/git/rce_request.png"
+    src="https://TMDeal.github.io/images/devzat/git/rce_request.png"
     alt="Sending the request with Burp" /> <img
-    src="http://127.0.0.1:8888/images/devzat/shell_as_patrick.png"
+    src="https://TMDeal.github.io/images/devzat/shell_as_patrick.png"
     alt="Shell as Patrick" /></p>
     <p>From there, we can grab Patrick's ssh key for a better shell
     experience</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/shell_as_patrick_ssh.png"
+    src="https://TMDeal.github.io/images/devzat/shell_as_patrick_ssh.png"
     alt="Shell as Patrick" /></p>
     <h2 id="Shell as Catherine">Shell as Catherine</h2>
     <h3 id="Interesting ports">Interesting ports</h3>
     <p>After running linpeas, we can see that there are some ports that
     are open locally that we could not previously access</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/linpeas/active_ports.png"
+    src="https://TMDeal.github.io/images/devzat/linpeas/active_ports.png"
     alt="Open local ports" /></p>
     <p>Right now, we do not know what these ports do, so we will look
     around some more.</p>
@@ -205,14 +205,14 @@ drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static</code></pre>
     <p>We can see Patrick's chat log in the chat app by logging into it
     while logged into the machine as Patrick</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/patrick_chat_log.png"
+    src="https://TMDeal.github.io/images/devzat/patrick_chat_log.png"
     alt="Patrick chat log" /></p>
     <p>Looking up info on Influxdb shows that it runs on port 8086 by
     default, and is thus likely what we saw earlier in linpeas. We can
     check the version of Influxdb running by making a HEAD request with
     curl on port 8086</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/influxdb/influxdb_version.png"
+    src="https://TMDeal.github.io/images/devzat/influxdb/influxdb_version.png"
     alt="Influxdb version" /></p>
     <p>Looking up "Influxdb 1.7.5" on google shows results for <a
     href="https://github.com/LorenzoTullini/InfluxDB-Exploit-CVE-2019-20933">CVE-2019-20933</a>.</p>
@@ -221,32 +221,32 @@ drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static</code></pre>
     order to access the database on our machine.</p>
     <p><code>ssh -L 8086:127.0.0.1:8086 patrick@10.10.11.118 -i patrick_id_rsa</code>.</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/influxdb/admin_access.png"
+    src="https://TMDeal.github.io/images/devzat/influxdb/admin_access.png"
     alt="Login as admin on Influxdb" /></p>
     <p>From there, we can dump the data from the users table</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/influxdb/user_passwords.png"
+    src="https://TMDeal.github.io/images/devzat/influxdb/user_passwords.png"
     alt="Database dump" /></p>
     <p>This reveals a few users and their passwords, but Catherine
     sticks out because that is a user on the box. Attempting to use this
     password to switch users to Catherine is successful</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/shell_as_catherine.png"
+    src="https://TMDeal.github.io/images/devzat/shell_as_catherine.png"
     alt="Shell as Catherine" /> <img
-    src="http://127.0.0.1:8888/images/devzat/user_get.png"
+    src="https://TMDeal.github.io/images/devzat/user_get.png"
     alt="User flag" /></p>
     <h2 id="Shell as root">Shell as root</h2>
     <p>Now that we are Catherine, lets examine her chat log like we did
     for Patrick.</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/catherine_chat_log.png"
+    src="https://TMDeal.github.io/images/devzat/catherine_chat_log.png"
     alt="Catherine chat log" /></p>
     <p>The chat log mentions the development version of the chat app is
     up on port 8443, and the source code is in a backup file. Checking
     in /var/backup we find archives of the development and main
     version.</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/chat_app/backup_files.png"
+    src="https://TMDeal.github.io/images/devzat/chat_app/backup_files.png"
     alt="Backup files" /></p>
     <p>Extracting and checking the this version of the code shows a new
     command <code>file</code> has been added that allows reading files
@@ -254,14 +254,15 @@ drwxr-xr-x  4 trent trent    4096 Jul 26 17:44 static</code></pre>
     app, so we can just read it. Since this program is running as root,
     we can read roots ssh key</p>
     <p><img
-    src="http://127.0.0.1:8888/images/devzat/dev_chat_app/pass_for_reading_files.png"
+    src="https://TMDeal.github.io/images/devzat/dev_chat_app/pass_for_reading_files.png"
     alt="Password to run command" /> <img
-    src="http://127.0.0.1:8888/images/devzat/dev_chat_app/root_ssh_key.png"
+    src="https://TMDeal.github.io/images/devzat/dev_chat_app/root_ssh_key.png"
     alt="Reading root ssh key" /></p>
     <p>Then we can just ssh as root</p>
-    <p><img src="http://127.0.0.1:8888/images/devzat/shell_as_root.png"
+    <p><img
+    src="https://TMDeal.github.io/images/devzat/shell_as_root.png"
     alt="Shell as root" /> <img
-    src="http://127.0.0.1:8888/images/devzat/root_get.png"
+    src="https://TMDeal.github.io/images/devzat/root_get.png"
     alt="Root flag" /></p>
 
     <script type="text/javascript"
