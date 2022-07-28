@@ -8,14 +8,11 @@ INPUT="$ROOT_DIR/$1"
 OUTPUT="$ROOT_DIR/$2"
 DATA_DIR="$ROOT_DIR/$3"
 META_FILE="$ROOT_DIR/$4"
-WEBROOT="$5"
 
 FILTERS="$DATA_DIR/filters"
 
-ARGS="-f vimwiki -t html $INPUT \
+pandoc -f vimwiki -t html $INPUT \
     --output $OUTPUT \
     --data-dir $DATA_DIR \
     --defaults "$META_FILE" \
-    --lua-filter $FILTERS/fix_images.lua"
-
-pandoc $ARGS -M webroot=$WEBROOT
+    --lua-filter $FILTERS/fix_images.lua

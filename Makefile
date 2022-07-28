@@ -19,21 +19,11 @@ META_FILES := $(addprefix $(META_DIR)/, $(WIKI_FILES:%.wiki=%.yml))
 BUILD_SCRIPT := ./scripts/build
 UPDATE_META_SCRIPT := ./scripts/update_meta
 
-WEBROOT := https://TMDeal.github.io
-
 .PHONY: all
 all: build
 
 .PHONY: build
-build: build-dev
-
-.PHONY: build-build
-build-prod: WEBROOT := https://TMDeal.github.io
-build-prod: html assets
-
-.PHONY: build-dev
-build-dev: WEBROOT := http://127.0.0.1:8888
-build-dev: html assets
+build: html assets
 
 .PHONY: html
 html: meta $(HTML_FILES)
@@ -45,9 +35,9 @@ assets: $(IMAGE_FILES) $(CSS_FILES)
 meta: $(META_FILES)
 
 $(OUTPUT_DIR)/%.html: %.wiki
-	@echo "Building HTML files with WEBROOT=$(WEBROOT)"
+	@echo "Building $?"
 	@mkdir -p $(shell dirname $@)
-	@$(BUILD_SCRIPT) "$?" "$@" "$(DATA_DIR)" "$(addprefix $(META_DIR)/, $(?:%.wiki=%.yml))" $(WEBROOT)
+	@$(BUILD_SCRIPT) "$?" "$@" "$(DATA_DIR)" "$(addprefix $(META_DIR)/, $(?:%.wiki=%.yml))"
 
 $(OUTPUT_DIR)/$(IMAGE_DIR)/%.png: $(IMAGE_DIR)/%.png
 	@echo "Copying $? to $@"
