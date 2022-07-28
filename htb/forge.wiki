@@ -186,6 +186,7 @@ finally:
     - To do this, we need to open an ssh session that runs the script, and another that connects to
       it, since it only listens on localhost
     - then we can import os and execute code from there in pdb
+    - UPDATE: it actually just needs to be a non number, but 1024 "A" also works
 
 {{local:../images/forge/shell_as_root.png|Shell as root}}
 {{local:../images/forge/root_get.png|Root flag}}
