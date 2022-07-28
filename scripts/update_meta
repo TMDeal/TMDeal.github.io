@@ -5,7 +5,6 @@ SCRIPT_DIR="${SCRIPT_FILE%/*}"
 ROOT_DIR=$(realpath "$SCRIPT_DIR/..")
 
 META_FILE="$ROOT_DIR/$1"
-WEBROOT="$2"
 TEMPLATE="default"
 TITLE=$(basename $META_FILE .yml)
 DATE=$(date +"%Y-%m-%d")
@@ -21,7 +20,7 @@ EOF
 
 # Always create a metadata file if an associated file does not already have
 # one. This will be set to the defaults defined in $DEFAULTS
-if [ ! -f "$METADATA" ]; then
+if [ ! -f "$META_FILE" ]; then
     mkdir -p $(dirname "$META_FILE")
     printf "$DEFAULTS" > "$META_FILE"
 fi
