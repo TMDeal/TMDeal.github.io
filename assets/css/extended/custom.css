@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap');
+
+body {
+    font-family: 'Anonymous Pro', monospace;
+}
+
+:root {
+    /* Original */
+    /* --theme: rgb(255, 255, 255); */
+    /* --entry: rgb(255, 255, 255); */
+    /* --primary: rgb(30, 30, 30); */
+    /* --secondary: rgb(108, 108, 108); */
+    /* --tertiary: rgb(214, 214, 214); */
+    /* --content: rgb(31, 31, 31); */
+    /* --hljs-bg: rgb(28, 29, 33); */
+    /* --code-bg: rgb(245, 245, 245); */
+    /* --border: rgb(238, 238, 238); */
+
+    /* Colors based on https://www.nordtheme.com/ */
+    --theme: rgb(236,239,244);
+    --entry: rgb(236,239,244);
+    --primary: rgb(46,52,64);
+    --secondary: rgb(87,92,102);
+    --tertiary: rgb(216,222,233);
+    --content: rgb(46,52,64);
+    --hljs-bg: rgb(46,52,64);
+    --code-bg: rgb(245, 245, 245);
+    --border: rgb(206,209,216);
+}
+
+.dark {
+    /* Original */
+    /* --theme: rgb(29, 30, 32); */
+    /* --entry: rgb(46, 46, 51); */
+    /* --primary: rgb(218, 218, 219); */
+    /* --secondary: rgb(155, 156, 157); */
+    /* --tertiary: rgb(65, 66, 68); */
+    /* --content: rgb(196, 196, 197); */
+    /* --hljs-bg: rgb(46, 46, 51); */
+    /* --code-bg: rgb(55, 56, 62); */
+    /* --border: rgb(51, 51, 51); */
+
+    /* Colors based on https://www.nordtheme.com/ */
+    --theme: rgb(46,52,64);
+    --entry: rgb(59,66,82);
+    --primary: rgb(216,222,233);
+    --secondary: rgb(151,155,163);
+    --tertiary: rgb(65, 66, 68);
+    --content: rgb(196, 196, 197);
+    --hljs-bg: rgb(59,66,82);
+    --code-bg: rgb(78,84,99);
+    --border: rgb(59,66,82);
+}
+
+/* Center cover image and make it 50% smaller */
+.entry-cover img {
+    width: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
