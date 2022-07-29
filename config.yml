@@ -2,3 +2,25 @@ baseURL: https://TMDeal.github.io
 languageCode: en-us
 title: TMDeal Pages
 theme: PaperMod
+  author: "Trent Deal"
+
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: false
+  ShowWordCount: false
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  comments: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: false
+  tocopen: false
+  TocOpen: false
+  searchHidden: false
+  disableHLJS: false
+  disableShare: false
+
