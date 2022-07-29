@@ -1,3 +1,0 @@
-= [[index|Home]] =
-
-=== [[htb/index|HackTheBox Writeups]] ===

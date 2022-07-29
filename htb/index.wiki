@@ -1,4 +1,0 @@
-= [[index|HackTheBox Writeups]] =
-
-* [[devzat|Devzat]]
-* [[forge|Forge]]
