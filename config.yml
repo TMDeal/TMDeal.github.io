@@ -33,3 +33,35 @@ theme: PaperMod
     buttons:
       - name: HackTheBox
         url: /htb
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    ignoreLocation: true
+    threshold: 0
+    minMatchCharLength: 1
+    keys: ["title"]
+
+menu:
+  main:
+    - identifier: Search
+      name: Search
+      url: /search/
+      weight: 10
+    - identifier: Archives
+      name: Archives
+      url: /archives/
+      weight: 20
+    - identifier: Categories
+      name: Categories
+      url: /categories/
+      weight: 30
+    - identifier: Tags
+      name: Tags
+      url: /tags/
+      weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
