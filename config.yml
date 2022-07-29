@@ -24,3 +24,12 @@ theme: PaperMod
   disableHLJS: false
   disableShare: false
 
+  profileMode:
+    enabled: true
+    title: TMDeal Home
+    subtitle: Place to post my things
+    imageUrl: "images/profile.png"
+    imageTitle: profile
+    buttons:
+      - name: HackTheBox
+        url: /htb
