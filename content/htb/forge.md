@@ -1,6 +1,7 @@
 ---
 title: "HackTheBox - Forge"
 date: 2022-07-29T12:26:51-04:00
+summary: "Writeup for the Forge lab machine from HackTheBox"
 draft: true
 tags: []
 author: "Trent Deal"
@@ -11,7 +12,7 @@ comments: false
 description: ""
 disableHLJS: false
 disableShare: false
-searchHidden: true
+searchHidden: false
 ShowReadingTime: true
 ShowBreadCrumbs: true
 ShowPostNavLinks: true
@@ -24,6 +25,10 @@ cover:
     caption: "" # display caption under cover
     relative: false # when using page bundles set this to true
     hidden: true # only hide on current single page
+categories:
+- Hacking
+tags:
+- HackTheBox
 ---
 
 ```nohighlight
