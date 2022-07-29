@@ -1,8 +1,16 @@
 baseURL: https://TMDeal.github.io
 languageCode: en-us
-title: TMDeal Pages
+title: TMDeal
+paginate: 5
 theme: PaperMod
+
+params:
+  title: "TMDeal"
+  description: "Github pages for TMDeal"
+  keywords: [ Blog, Hacking, Portfolio ]
   author: "Trent Deal"
+  defaultTheme: auto
+  disableThemeToggle: false
 
   ShowReadingTime: true
   ShowShareButtons: true
@@ -38,6 +46,13 @@ theme: PaperMod
     buttons:
       - name: HackTheBox
         url: /htb
+
+  socialIcons:
+    - name: github
+      url: https://github.com/TMDeal/
+    # - name: twitter
+    #   url: https://twitter.com/TMDealio
+
   fuseOpts:
     isCaseSensitive: false
     shouldSort: true
