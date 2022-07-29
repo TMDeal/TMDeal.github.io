@@ -1,7 +1,7 @@
 ---
 title: "HackTheBox - Forge"
 date: 2022-07-29T12:26:51-04:00
-draft: false
+draft: true
 tags: []
 author: "Trent Deal"
 showToc: true
