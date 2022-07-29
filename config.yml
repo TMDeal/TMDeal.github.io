@@ -24,6 +24,11 @@ theme: PaperMod
   disableHLJS: false
   disableShare: false
 
+  cover:
+    hidden: true # hide everywhere but not in structured data
+    hiddenInList: true # hide on list pages and home
+    hiddenInSingle: false # hide on single page
+
   profileMode:
     enabled: true
     title: TMDeal Home
