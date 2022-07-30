@@ -56,6 +56,8 @@ params:
   socialIcons:
     - name: github
       url: https://github.com/TMDeal/
+    - name: hackthebox
+      url: https://app.hackthebox.com/users/462241
     # - name: twitter
     #   url: https://twitter.com/TMDealio
 
