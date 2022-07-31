@@ -2,7 +2,7 @@
 title: {{ replace .Name "-" " " | title }}
 date: {{ .Date }}
 summary: ""
-draft: false
+draft: true
 tags: [Hacking]
 categories: [HackTheBox]
 cover:
