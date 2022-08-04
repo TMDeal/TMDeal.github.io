@@ -6,9 +6,9 @@ draft: true
 tags: [Hacking]
 categories: [HackTheBox]
 cover:
-    image: "" # image path/url
+    image: "./images/cover.png" # image path/url
     alt: {{ replace .Name "-" " " | title }} # alt text
     caption: "" # display caption under cover
-    relative: false # when using page bundles set this to true
+    relative: true # when using page bundles set this to true
 ---
 
