@@ -1,6 +1,6 @@
 ---
 title: "HackTheBox - Devzat"
-date: 2022-07-29T12:06:16-04:00
+date: 2022-07-29
 summary: "Writeup for the Devzat lab machine on HackTheBox"
 draft: false
 tags: [HackTheBox]
