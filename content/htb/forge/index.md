@@ -6,7 +6,7 @@ draft: false
 tags: [Hacking]
 categories: [HackTheBox]
 cover:
-    image: "https://www.hackthebox.com/storage/avatars/0ca81b73efd1c8a45732183a34b54d3a.png" # image path/url
+    image: "images/cover.png" # image path/url
     alt: "Forge" # alt text
     caption: "" # display caption under cover
     relative: false # when using page bundles set this to true
