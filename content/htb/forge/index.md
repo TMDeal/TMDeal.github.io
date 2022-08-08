@@ -1,5 +1,5 @@
 ---
-title: "HackTheBox - Forge"
+title: "Forge"
 date: 2022-08-04
 summary: "Writeup for the Forge lab machine from HackTheBox"
 draft: false

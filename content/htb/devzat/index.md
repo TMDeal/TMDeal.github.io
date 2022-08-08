@@ -1,5 +1,5 @@
 ---
-title: "HackTheBox - Devzat"
+title: "Devzat"
 date: 2022-07-29
 summary: "Writeup for the Devzat lab machine on HackTheBox"
 draft: false
