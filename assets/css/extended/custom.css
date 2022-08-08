@@ -59,3 +59,9 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+img:not(.entry-cover img):not(.profile img) {
+    border: 2px solid var(--border);
+    margin-left: auto;
+    margin-right: auto
+}
