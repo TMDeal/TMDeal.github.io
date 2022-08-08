@@ -1,7 +1,7 @@
 ---
 title: {{ replace .Name "-" " " | title }}
 date: {{ .Date }}
-summary: ""
+summary: "Writeup for the {{ title .Name }} lab machine on HackTheBox"
 draft: true
 tags: [Hacking]
 categories: [HackTheBox]
