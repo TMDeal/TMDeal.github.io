@@ -1,6 +1,6 @@
 ---
 title: {{ replace .Name "-" " " | title }}
-date: {{ .Date }}
+date: {{ .Date | time.Format ":date_short" }}
 summary: "Writeup for the {{ title .Name }} lab machine on HackTheBox"
 draft: true
 tags: [Hacking]
